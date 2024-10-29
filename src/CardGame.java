@@ -3,23 +3,52 @@ import java.util.Scanner;
 
 public class CardGame {
 
-    private static int numOfPlayers;
     private ArrayList<Player> players = new ArrayList<>();
-    private ArrayList<Deck> decks = new ArrayList<>();
+    //private ArrayList<Deck> decks = new ArrayList<>();
 
     public static void main(String[] args) {
-        
+        CardGame game = new CardGame(); // Create game object
+        game.initialisePlayers();
+        game.initialisePack();
+        game.startGame();
+    }
+
+    private void createPlayers(int numOfPlayers) {
+        for (int i = 1; i < numOfPlayers + 1; i++) {
+            System.out.println("Creating Player: " + i);
+            Player player = new Player(i);
+            players.add(player);
+        }
+    }
+
+    private void initialisePlayers() {
         Scanner console = new Scanner(System.in);  // Create a Scanner object
+        int intInput;
 
         // Ask for number of players
-        System.out.println("Enter number of players: ");
-        numOfPlayers = Integer.parseInt(console.nextLine());  // Read user input
-        System.out.println("Number of players is: " + numOfPlayers);
+        while (true) {
+            System.out.println("Enter number of players: ");
+            String input = console.nextLine();
+            
+            try {
+                intInput = Integer.parseInt(input);
+                if (intInput < 1) {throw new Exception("Number not greater than or equal to 1");}
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a positive integer.");
+            } catch (Exception e) {
+                System.out.println("Invalid input. " + e.getMessage());
+            }
+        }
         console.close();
+        createPlayers(intInput);
+    }
 
-        // Ask for deck input
+    private void initialisePack() {
+        //TODO
+    }
 
-        // Start Game
-
+    private void startGame() {
+        System.out.println("Game starts!");
     }
 }
