@@ -16,6 +16,4 @@ DESIGN TESTS
 LOG
 ----------
 
-
-
-
+29/10/2024 - 2 hours - Planning & Start coding
