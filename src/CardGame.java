@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class CardGame {
 
     private ArrayList<Player> players = new ArrayList<>();
-    private ArrayList<Integer> pack = new ArrayList<>();
+    private ArrayList<Deck> decks = new ArrayList<>();
 
     public static void main(String[] args) {
         CardGame game = new CardGame(); // Create game object
@@ -48,13 +48,15 @@ public class CardGame {
     }
 
     protected void initialisePack() {
+        ArrayList<Integer> pack = new ArrayList<>();
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             System.out.println("Enter the name of the pack file: ");
             pack = new ArrayList<>(); // Wipe pack
             try {
                 String fileName = reader.readLine();
-                loadPackFromFile(fileName);
+                loadPackFromFile(pack, fileName);
                 if (pack.size() != 8 * players.size()) {
                     throw new Exception("The pack given is not of size 8n rows, where n is the number of players.");
                 }
@@ -67,9 +69,11 @@ public class CardGame {
         }
         System.out.println("Pack loaded successfully!");
         System.out.println(pack);
+
+        splitPackIntoDecks(pack);
     }
 
-    private void loadPackFromFile(String fileName) throws Exception {
+    private void loadPackFromFile(ArrayList<Integer> pack, String fileName) throws Exception {
         String line = "";
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             while ((line = br.readLine()) != null) {
@@ -87,7 +91,34 @@ public class CardGame {
         }
     }
 
+    private void splitPackIntoDecks(ArrayList<Integer> pack) {
+        int packCounter = 0;
+
+        for (Player player : players) {
+            for (int i = 0; i < 4; i++) { // Fill players
+                player.addToHand(new Card(pack.get(packCounter + i)));
+            }
+            packCounter += 4;
+        }
+        for (int i = 0; i < players.size(); i++) { // Make blank decks
+            Deck deck = new Deck(i + 1);
+            decks.add(deck);
+        }
+        for (Deck deck : decks) { // Fill decks
+            for (int i = 0; i < 4; i++) {
+                deck.addToDeck(new Card(pack.get(packCounter + i)));
+            }
+            packCounter += 4;
+        }
+    }
+
     private void startGame() {
+        for (Player player : players) {
+            player.printHand();
+        }
+        for (Deck deck : decks) {
+            deck.printDeck();
+        }
         System.out.println("Game starts!");
     }
 }
