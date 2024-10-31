@@ -31,9 +31,9 @@ public class CardGame {
                 }
                 break;
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a positive integer.\n");
+                System.out.println("Invalid input. Please enter a positive integer.");
             } catch (Exception e) {
-                System.out.println("Invalid input. " + e.getMessage() + "\n");
+                System.out.println("Invalid input. " + e.getMessage() + "");
             }
         }
         createPlayers(intInput);
@@ -51,28 +51,39 @@ public class CardGame {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             System.out.println("Enter the name of the pack file: ");
+            pack = new ArrayList<>(); // Wipe pack
             try {
                 String fileName = reader.readLine();
                 loadPackFromFile(fileName);
+                if (pack.size() != 8 * players.size()) {
+                    throw new Exception("The pack given is not of size 8n rows, where n is the number of players.");
+                }
                 break;
             } catch (IOException e) {
-                System.out.println("Error finding/reading file. Please try again.\n");
+                System.out.println("Error finding/reading file. Please try again.");
+            } catch (Exception e) {
+                System.out.println(e);
             }
         }
         System.out.println("Pack loaded successfully!");
         System.out.println(pack);
     }
 
-    private void loadPackFromFile(String fileName) throws IOException {
+    private void loadPackFromFile(String fileName) throws Exception {
+        String line = "";
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
             while ((line = br.readLine()) != null) {
+                
                 int number = Integer.parseInt(line);
+                if (number < 0) {
+                    throw new Exception("The pack given contains negative elements.");
+                }
                 pack.add(number);
             }
         } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
-            throw e;
+            throw new IOException("Error finding/reading file.");
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("The pack given contains a non integer element: " + line + "");
         }
     }
 
