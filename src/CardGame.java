@@ -13,7 +13,7 @@ public class CardGame {
         game.startGame();
     }
 
-    private void createPlayers(int numOfPlayers) {
+    protected void createPlayers(int numOfPlayers) {
         for (int i = 1; i < numOfPlayers + 1; i++) {
             System.out.println("Creating Player: " + i);
             Player player = new Player(i);
@@ -21,7 +21,7 @@ public class CardGame {
         }
     }
 
-    private void initialisePlayers() {
+    protected void initialisePlayers() {
         Scanner console = new Scanner(System.in);  // Create a Scanner object
         int intInput;
 
