@@ -7,16 +7,23 @@ import java.util.ArrayList;
 public class CardGame {
 
     private ArrayList<Player> players = new ArrayList<>();
+    private ArrayList<Thread> playerThreads = new ArrayList<>();
     private ArrayList<Deck> decks = new ArrayList<>();
 
     public static void main(String[] args) {
         CardGame game = new CardGame(); // Create game object
-        game.initialisePlayers();
+        game.initialisePlayers(game);
         game.initialisePack();
-        game.startGame();
+
+        int winnerNumber = game.winOnStart();
+        if (winnerNumber != -1) {
+            System.out.println("player " + winnerNumber + " wins");
+        } else {
+            game.startGame();
+        }
     }
 
-    protected void initialisePlayers() {
+    private void initialisePlayers(CardGame game) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         int intInput;
 
@@ -36,18 +43,18 @@ public class CardGame {
                 System.out.println("Invalid input. " + e.getMessage() + "");
             }
         }
-        createPlayers(intInput);
+        createPlayers(intInput, game);
     }
 
-    protected void createPlayers(int numOfPlayers) {
+    private void createPlayers(int numOfPlayers, CardGame game) {
         for (int i = 1; i < numOfPlayers + 1; i++) {
             System.out.println("Creating Player: " + i);
-            Player player = new Player(i);
+            Player player = new Player(i, game);
             players.add(player);
         }
     }
 
-    protected void initialisePack() {
+    private void initialisePack() {
         ArrayList<Integer> pack = new ArrayList<>();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -112,13 +119,51 @@ public class CardGame {
         }
     }
 
+    private int winOnStart() {
+        // Check all players hands for a winning hand on start
+        for (Player player : players) {
+            if (player.checkWin()) {
+                return player.getPlayerNumber();
+            }
+        }
+        return -1;
+    }
+
     private void startGame() {
         for (Player player : players) {
-            player.printHand();
+            Thread playerThread = new Thread(player);
+            playerThreads.add(playerThread);
+            playerThread.start();
         }
-        for (Deck deck : decks) {
-            deck.printDeck();
+        for (Thread playerThread : playerThreads) {
+            try {
+                playerThread.join();
+            } catch (InterruptedException e) {}
         }
-        System.out.println("Game starts!");
+        System.out.println("player " + Player.getWinner() + " wins");
+    }
+
+    public Card drawCard(int playerNumber) {
+        // Return top card from deck i , where i is playerNumber
+        Deck deck = decks.get(playerNumber);
+        // Wait until deck is not empty
+        while (deck.isEmpty()) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Card card = deck.drawFromTopDeck();
+        return card;
+    }
+
+    public void discardCard(int playerNumber, Card card) {
+        // Place card at bottom of deck i, where i is the next player on from playerNumber
+        int nextPlayerNumber = (playerNumber % players.size()) + 1;
+        Deck deck = decks.get(nextPlayerNumber);
+        deck.addToDeck(card);
+        // Notify all threads that a card has been discarded
+        notifyAll();
     }
 }
