@@ -1,1 +1,0 @@
-player 4 current hand: 5 8 5 6 
