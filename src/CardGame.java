@@ -11,10 +11,24 @@ public class CardGame {
     private ArrayList<Thread> playerThreads = new ArrayList<>();
     private ArrayList<Deck> decks = new ArrayList<>();
 
+    // SINGLETON ATTEMPT
+    // Private constructor
+    private CardGame() {}
+
+    // Static inner singleton helper class
+    private static class CardGameHelper {
+        private static final CardGame INSTANCE = new CardGame();
+    }
+
+    // Public static method to get access to instance of the singleton
+    public static CardGame getInstance() {
+        return CardGameHelper.INSTANCE;
+    }
+
     public static void main(String[] args) {
         deletePlayerOutputFiles();
 
-        CardGame game = new CardGame(); // Create game object
+        CardGame game = CardGame.getInstance(); // Create singleton game object instance
         game.initialisePlayers(game);
         game.initialisePack();
 
