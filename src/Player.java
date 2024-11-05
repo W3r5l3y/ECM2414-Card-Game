@@ -69,8 +69,8 @@ public class Player implements Runnable {
         try {
             File file = new File(fileName);
             file.createNewFile();
-            FileWriter writer = new FileWriter(file);
-            writer.write("player " + playerNumber + " " + handState + " hand: " + handValues);
+            FileWriter writer = new FileWriter(file, true);
+            writer.write("player " + playerNumber + " " + handState + " hand: " + handValues + "\n");
             writer.close();
         } catch (Exception e) {
             System.out.println("CHEESE AND BEANS");
