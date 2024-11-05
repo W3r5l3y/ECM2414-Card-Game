@@ -3,7 +3,11 @@ DESIGN PRODUCTION CODE
 ----------
 
 Random choice of card removal, so no live-lock.
-
+Player 'hand' volatile.
+Deck 'deck' volatile.
+drawCard synchronized.
+discardCard synchronized.
+wait() in deck.isEmpty() loop in drawCard to prevent player from drawing from empty deck. notifyAll() in after discardCard() execution to get waiting threads to check their pack.
 
 --------------------------------------------------
 DESIGN TESTS
