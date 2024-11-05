@@ -14,29 +14,6 @@ public class Player implements Runnable {
         this.game = game;
     }
 
-    public int getPlayerNumber() {
-        return playerNumber;
-    }
-
-    public static int getWinner() {
-        return winner;
-    }
-
-    public void addToHand(Card card) {
-        hand.add(card);
-    }
-
-    public void removeFromHand(Card card) {
-        hand.remove(card);
-    }
-
-    public void printHand() { // TODO REMOVE AFTER TESTING
-        for (Card card : hand) {
-            System.out.println("Player " + playerNumber + ": " + card.getValue());
-        }
-    }
-
-    // THREADING LOGIC
     @Override
     public void run() {
         // Thread logic for player
@@ -63,12 +40,34 @@ public class Player implements Runnable {
         logCurrentHand("final");
     }
 
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public static int getWinner() {
+        return winner;
+    }
+
+    public void addToHand(Card card) {
+        hand.add(card);
+    }
+
+    private void removeFromHand(Card card) {
+        hand.remove(card);
+    }
+
+    public void printHand() { // TODO REMOVE AFTER TESTING
+        for (Card card : hand) {
+            System.out.println("Player " + playerNumber + ": " + card.getValue());
+        }
+    }
+
     /**
      * Logs the current hand of the player to a file.
      *
      * @param handState A string representing the state of the hand (e.g., "initial", "current", "final").
      */
-    public void logCurrentHand(String handState) {
+    private void logCurrentHand(String handState) {
         String fileName = "player" + playerNumber + "_output.txt";
         StringBuilder handValues = new StringBuilder();
         for (Card card : hand) {
@@ -85,7 +84,7 @@ public class Player implements Runnable {
         }
     }
 
-    public void logMessage(String message) {
+    private void logMessage(String message) {
         String fileName = "player" + playerNumber + "_output.txt";
         try {
             File file = new File(fileName);
@@ -101,7 +100,7 @@ public class Player implements Runnable {
     /**
      * Draws a card from the deck and adds it to the player's hand.
      */
-    public void drawCard() {
+    private void drawCard() {
         Card drawnCard = game.drawCard(playerNumber);
         addToHand(drawnCard);
         String message = "player " + playerNumber + " draws a " + drawnCard.getValue() + " from deck " + playerNumber;
@@ -111,7 +110,7 @@ public class Player implements Runnable {
     /**
      * Discards a card from the player's hand.
      */
-    public void discardCard() {
+    private void discardCard() {
         // Logic to check which card to discard
         ArrayList<Card> discardList = new ArrayList<>();
         for (Card card : hand) {
@@ -128,7 +127,7 @@ public class Player implements Runnable {
         logMessage(message);
     }
 
-    public boolean checkWin() {
+    private boolean checkWin() {
         int firstValue = hand.get(0).getValue();
         for (int i = 1; i < hand.size(); i++) {
             if (hand.get(i).getValue() != firstValue) {

@@ -18,10 +18,12 @@ public class CardGame {
     private ArrayList<Thread> playerThreads = new ArrayList<>();
     private ArrayList<Deck> decks = new ArrayList<>();
 
+
     /**
      * Singleton constructor for the CardGame class
      */
     private CardGame() {}
+
 
     /**
      * Singleton helper class to create the CardGame instance
@@ -29,6 +31,7 @@ public class CardGame {
     private static class CardGameHelper {
         private static CardGame instance = new CardGame();
     }
+
 
     /**
      * Get the singleton instance of the CardGame
@@ -56,7 +59,7 @@ public class CardGame {
     /**
      * Delete all player output files in the current directory
      */
-    public static void deletePlayerOutputFiles() {
+    private static void deletePlayerOutputFiles() {
         File currentDir = new File(".");
         File[] files = currentDir.listFiles((dir, name) -> name.matches("player\\d+_output\\.txt"));
 
@@ -77,7 +80,7 @@ public class CardGame {
     /**
      * Delete all deck output files in the current directory
      */
-    public static void deleteDeckOutputFiles() {
+    private static void deleteDeckOutputFiles() {
         File currentDir = new File(".");
         File[] files = currentDir.listFiles((dir, name) -> name.matches("deck\\d+_output\\.txt"));
 
