@@ -47,7 +47,7 @@ public class CardGame {
     }
 
     private void createPlayers(int numOfPlayers, CardGame game) {
-        for (int i = 1; i < numOfPlayers + 1; i++) {
+        for (int i = 1; i <= numOfPlayers; i++) {
             System.out.println("Creating Player: " + i);
             Player player = new Player(i, game);
             players.add(player);
@@ -143,9 +143,9 @@ public class CardGame {
         System.out.println("player " + Player.getWinner() + " wins");
     }
 
-    public Card drawCard(int playerNumber) {
+    public synchronized Card drawCard(int playerNumber) {
         // Return top card from deck i , where i is playerNumber
-        Deck deck = decks.get(playerNumber);
+        Deck deck = decks.get(playerNumber - 1);
         // Wait until deck is not empty
         while (deck.isEmpty()) {
             try {
@@ -158,10 +158,10 @@ public class CardGame {
         return card;
     }
 
-    public void discardCard(int playerNumber, Card card) {
+    public synchronized void discardCard(int playerNumber, Card card) {
         // Place card at bottom of deck i, where i is the next player on from playerNumber
         int nextPlayerNumber = (playerNumber % players.size()) + 1;
-        Deck deck = decks.get(nextPlayerNumber);
+        Deck deck = decks.get(nextPlayerNumber - 1);
         deck.addToDeck(card);
         // Notify all threads that a card has been discarded
         notifyAll();
