@@ -1,0 +1,1 @@
+player 1 current hand: 1 8 8 3 
