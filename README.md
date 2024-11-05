@@ -16,9 +16,9 @@ ECM2414-Card-Game/
 ├── test/
 │   ├── CardGameTest.java
 │   ├── DeckTest.java
+│   ├── CardTest.java
 │   └── PlayerTest.java
-├──
-README.md
+├── README.md
 └── pack.txt
 ```
 
