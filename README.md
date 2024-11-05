@@ -70,4 +70,6 @@ The test suite includes the following test classes:
 
 - `DeckTest.java`: Tests for the Deck class.
 
+- `CardTest.java`: Tests for the Card class.
+
 - `PlayerTest.java`: Tests for the Player class.
