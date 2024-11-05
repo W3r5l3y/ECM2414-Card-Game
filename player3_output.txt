@@ -1,1 +1,0 @@
-player 3 current hand: 5 1 5 3 
