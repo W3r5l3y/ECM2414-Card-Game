@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +12,8 @@ public class CardGame {
     private ArrayList<Deck> decks = new ArrayList<>();
 
     public static void main(String[] args) {
+        deletePlayerOutputFiles();
+
         CardGame game = new CardGame(); // Create game object
         game.initialisePlayers(game);
         game.initialisePack();
@@ -20,6 +23,23 @@ public class CardGame {
             System.out.println("player " + winnerNumber + " wins");
         } else {
             game.startGame();
+        }
+    }
+
+    public static void deletePlayerOutputFiles() {
+        File currentDir = new File(".");
+        File[] files = currentDir.listFiles((dir, name) -> name.matches("player\\d+_output\\.txt"));
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.delete()) {
+                    System.out.println("Deleted: " + file.getName());
+                } else {
+                    System.out.println("Failed to delete: " + file.getName());
+                }
+            }
+        } else {
+            System.out.println("No files found.");
         }
     }
 
