@@ -11,18 +11,17 @@ public class CardGame {
     private ArrayList<Thread> playerThreads = new ArrayList<>();
     private ArrayList<Deck> decks = new ArrayList<>();
 
-    // SINGLETON ATTEMPT
     // Private constructor
     private CardGame() {}
 
     // Static inner singleton helper class
     private static class CardGameHelper {
-        private static final CardGame INSTANCE = new CardGame();
+        private static CardGame instance = new CardGame();
     }
 
     // Public static method to get access to instance of the singleton
     public static CardGame getInstance() {
-        return CardGameHelper.INSTANCE;
+        return CardGameHelper.instance;
     }
 
     public static void main(String[] args) {
