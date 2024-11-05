@@ -5,7 +5,7 @@ import java.io.FileWriter;
 
 public class Player implements Runnable {
     private int playerNumber;
-    private ArrayList<Card> hand = new ArrayList<>();
+    private volatile ArrayList<Card> hand = new ArrayList<>();
     private CardGame game;
     private static volatile int winner = -1;
 
@@ -41,6 +41,9 @@ public class Player implements Runnable {
     public void run() {
         // Thread logic for player
         logCurrentHand("initial");
+        if (checkWin() == true) {
+            winner = playerNumber;
+        }
         while (winner == -1) {
             drawCard();
             discardCard();
@@ -51,8 +54,13 @@ public class Player implements Runnable {
             }
         }
         // Game over logic
-
-    
+        if (winner == playerNumber) {
+            logMessage("player " + playerNumber + " wins");
+        } else {
+            logMessage("player " + winner + " has informed player " + playerNumber + " that player " + winner + " has won");
+        }
+        logMessage("player " + playerNumber + " exits");
+        logCurrentHand("final");
     }
 
     /**
@@ -73,7 +81,20 @@ public class Player implements Runnable {
             writer.write("player " + playerNumber + " " + handState + " hand: " + handValues + "\n");
             writer.close();
         } catch (Exception e) {
-            System.out.println("CHEESE AND BEANS");
+            e.printStackTrace();
+        }
+    }
+
+    public void logMessage(String message) {
+        String fileName = "player" + playerNumber + "_output.txt";
+        try {
+            File file = new File(fileName);
+            file.createNewFile();
+            FileWriter writer = new FileWriter(file, true);
+            writer.write(message + "\n");
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -83,7 +104,8 @@ public class Player implements Runnable {
     public void drawCard() {
         Card drawnCard = game.drawCard(playerNumber);
         addToHand(drawnCard);
-        // log
+        String message = "player " + playerNumber + " draws a " + drawnCard.getValue() + " from deck " + playerNumber;
+        logMessage(message);
     }
 
     /**
@@ -98,11 +120,12 @@ public class Player implements Runnable {
             }
         }
         Random random = new Random();
-        Card card = discardList.get(random.nextInt(0, discardList.size()));
+        Card discardedCard = discardList.get(random.nextInt(0, discardList.size()));
         
-        game.discardCard(playerNumber, card);
-        removeFromHand(card);
-        // log 
+        game.discardCard(playerNumber, discardedCard);
+        removeFromHand(discardedCard);
+        String message = "player " + playerNumber + " discards a " + discardedCard.getValue() + " to deck " + ((playerNumber % game.numberOfPlayers()) + 1);
+        logMessage(message);
     }
 
     public boolean checkWin() {
