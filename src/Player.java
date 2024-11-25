@@ -112,14 +112,13 @@ public class Player implements Runnable {
      */
     private void discardCard() {
         // Logic to check which card to discard
-        ArrayList<Card> discardList = new ArrayList<>();
+        Card discardedCard = null;
         for (Card card : hand) {
             if (card.getValue() != playerNumber) {
-                discardList.add(card);
+                discardedCard = card;
+                break;
             }
         }
-        Random random = new Random();
-        Card discardedCard = discardList.get(random.nextInt(0, discardList.size()));
         
         game.discardCard(playerNumber, discardedCard);
         removeFromHand(discardedCard);
