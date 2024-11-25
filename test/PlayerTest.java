@@ -1,9 +1,12 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import java.lang.reflect.Method;
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class PlayerTest {
 
@@ -63,7 +66,7 @@ public class PlayerTest {
         }
         assertEquals(expected, actual, "Log file should contain the initial hand");
         
-        file.delete(); // Clean up after test
+        //file.delete(); // Clean up after test
     }
 
     @Test
@@ -119,6 +122,78 @@ public class PlayerTest {
             e.printStackTrace();
         }
 
+        file.delete(); // Clean up after test
+    }
+
+    @Test
+    public void testRunLogCurrentHand() {
+        game = CardGame.getInstance();
+        int numberOfPlayers = 4;
+        ArrayList<Integer> pack = new ArrayList<>(Arrays.asList(
+        2, 1, 6, 7, 1, 6, 7, 2, 6, 8, 8, 7, 3, 7, 1, 8, 6, 2, 2, 6, 
+        5, 1, 3, 3, 5, 5, 8, 5, 2, 8, 7, 3
+        )); // Test pack with 32 cards (4 players)
+
+
+
+        try {
+            Method startGameMethod = CardGame.class.getDeclaredMethod("startGame", int.class, ArrayList.class);
+            startGameMethod.setAccessible(true);
+            startGameMethod.invoke(game, numberOfPlayers, pack);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting startGame method");
+        }
+
+        
+
+        File file = new File("player1_output.txt");
+        assertTrue(file.exists(), "Log file should be created");
+
+        // Check if the log file contains the current hand
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean handLogged = false;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("player 1 hand:")) {
+                    handLogged = true;
+                    break;
+                }
+            }
+            assertTrue(handLogged, "Log file should contain the output of the current hand");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         //file.delete(); // Clean up after test
+    }
+
+    @Test
+    void testStartGame() {
+        try {
+            // Prepare the game instance
+            CardGame game = CardGame.getInstance();
+
+            // Prepare arguments for startGame
+            int numberOfPlayers = 2; // Example: 2 players
+            ArrayList<Integer> pack = new ArrayList<>();
+            for (int i = 1; i <= 16; i++) { // 8n cards, where n = numberOfPlayers
+                pack.add(i);
+            }
+
+            // Access the private startGame method using reflection
+            Method startGameMethod = CardGame.class.getDeclaredMethod("startGame", int.class, ArrayList.class);
+            startGameMethod.setAccessible(true); // Bypass private access
+
+            // Invoke the private method with arguments
+            startGameMethod.invoke(game, numberOfPlayers, pack);
+
+            // Validate the game state
+            assertEquals(numberOfPlayers, game.numberOfPlayers(), "Number of players should match input.");
+            assertNotNull(Player.getWinner(), "There should be a winner after the game starts.");
+            assertTrue(game.numberOfPlayers() > 0, "Players should be initialized.");
+        } catch (Exception e) {
+            e.printStackTrace();;
+        }
     }
 }
