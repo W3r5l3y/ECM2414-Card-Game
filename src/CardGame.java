@@ -18,7 +18,6 @@ public class CardGame {
     private ArrayList<Thread> playerThreads = new ArrayList<>();
     private ArrayList<Deck> decks = new ArrayList<>();
 
-
     /**
      * Singleton constructor for the CardGame class
      */
@@ -46,73 +45,56 @@ public class CardGame {
      */
     public static void main(String[] args) {
         // Delete any existing output files
-        deletePlayerOutputFiles();
-        deleteDeckOutputFiles();
+        deleteOutputFiles("player\\d+_output\\.txt");
+        deleteOutputFiles("deck\\d+_output\\.txt");
 
-        CardGame game = CardGame.getInstance(); // Create singleton game object instance
-        game.initialisePlayers(game);
-        game.initialisePack();
-        game.startGame();
+        // Create singleton game object instance
+        CardGame game = CardGame.getInstance();
+        
+        // Get the number of players from the user
+        int numberOfPlayers = getNumberOfPlayers();
+        
+        // Get the pack of cards from the user
+        ArrayList<Integer> pack = getPack(numberOfPlayers);
+
+        // Start the game
+        game.startGame(numberOfPlayers, pack);
     }
 
 
     /**
-     * Delete all player output files in the current directory
+     * Delete output files matching a specific regex pattern.
      */
-    private static void deletePlayerOutputFiles() {
-        File currentDir = new File(".");
-        File[] files = currentDir.listFiles((dir, name) -> name.matches("player\\d+_output\\.txt"));
-
+    private static void deleteOutputFiles(String filename) {
+        File[] files = new File(".").listFiles((dir, name) -> name.matches(filename));
         if (files != null) {
             for (File file : files) {
                 if (file.delete()) {
-                    System.out.println("Deleted: " + file.getName()); // TODO: Remove this line after testing
+                    //System.out.println("Deleted: " + file.getName()); //TODO REMOVE
                 } else {
-                    System.out.println("Failed to delete: " + file.getName());
+                    //System.out.println("Failed to delete: " + file.getName()); //TODO REMOVE
                 }
             }
         } else {
-            System.out.println("No files found.");
+            System.out.println("No matching files found.");
         }
     }
-
-
-    /**
-     * Delete all deck output files in the current directory
-     */
-    private static void deleteDeckOutputFiles() {
-        File currentDir = new File(".");
-        File[] files = currentDir.listFiles((dir, name) -> name.matches("deck\\d+_output\\.txt"));
-
-        if (files != null) {
-            for (File file : files) {
-                if (file.delete()) {
-                    System.out.println("Deleted: " + file.getName()); // TODO: Remove this line after testing
-                } else {
-                    System.out.println("Failed to delete: " + file.getName());
-                }
-            }
-        } else {
-            System.out.println("No files found.");
-        }
-    }
-
 
     /**
      * Get the number of players from a terminal input and create the player objects
      * @param game The game object
      */
-    private void initialisePlayers(CardGame game) {
+    private static int getNumberOfPlayers() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        int intInput;
+        int numberOfPlayers;
 
         // Ask for number of players
         while (true) {
             System.out.println("Please enter the number of players: ");
             try {
                 String input = reader.readLine();
-                intInput = Integer.parseInt(input);
-                if (intInput < 1) {
+                numberOfPlayers = Integer.parseInt(input);
+                if (numberOfPlayers < 1) {
                     throw new Exception("Number not greater than or equal to 1");
                 }
                 break;
@@ -122,7 +104,8 @@ public class CardGame {
                 System.out.println("Invalid input. " + e.getMessage() + "");
             }
         }
-        createPlayers(intInput, game);
+
+        return numberOfPlayers;
     }
 
 
@@ -131,108 +114,123 @@ public class CardGame {
      * @param numOfPlayers The number of players to create
      * @param game The game object
      */
-    private void createPlayers(int numOfPlayers, CardGame game) {
+    private void createPlayers(int numOfPlayers) {
         for (int i = 1; i <= numOfPlayers; i++) {
-            System.out.println("Creating Player: " + i);
-            Player player = new Player(i, game);
+            // System.out.println("Creating Player: " + i); // TODO remove before submission
+            Player player = new Player(i, this);
             players.add(player);
         }
     }
 
 
     /**
-     * Get the pack of cards from a terminal input and distribute them to the players and decks
-     * Card pack file should contain 8n rows, where n is the number of players
-     * Cards are distributed in a round robin fashion, first to the players, then to the decks
+     * Prompt the user to input a file name, read the file, validate its contents,
+     * and return a valid pack of cards.
+     * @return The validated pack of cards
      */
-    private void initialisePack() {
-        ArrayList<Integer> pack = new ArrayList<>();
-
+    private static ArrayList<Integer> getPack(int numberOfPlayers) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        ArrayList<Integer> pack = new ArrayList<>();
+        
         while (true) {
-            System.out.println("Please enter location of pack to load: ");
-            pack = new ArrayList<>(); // Wipe pack
+            System.out.println("Please enter the location of the pack to load: ");
             try {
                 String fileName = reader.readLine();
+                File file = new File(fileName);
+                if (!file.exists()) {
+                    throw new IOException("File not found.");
+                }
+
+                // Attempt to load the pack from the file
+                pack = new ArrayList<>();
                 loadPackFromFile(pack, fileName);
-                if (pack.size() != 8 * players.size()) {
+
+                // Validate the size of the pack
+                if (pack.size() != 8 * numberOfPlayers) {
                     throw new Exception("The pack given is not of size 8n rows, where n is the number of players.");
                 }
-                break;
+                return pack;
+
             } catch (IOException e) {
-                System.out.println("Error finding/reading file. Please try again.");
+                System.out.println("Error: " + e.getMessage() + " Please try again.");
+            } catch (NumberFormatException e) {
+                System.out.println("Error: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println("Error: " + e.getMessage());
             }
         }
-        System.out.println("Pack loaded successfully!");
-        System.out.println(pack);
-
-        distributePack(pack);
     }
 
 
     /**
-     * Load the pack of cards from a file
+     * Load the pack of cards from a file.
      * @param pack The pack to load the cards into
      * @param fileName The name of the file to load the pack from
      * @throws Exception If the pack contains negative elements, a non-integer element, or is not of size 8n rows
      */
-    private void loadPackFromFile(ArrayList<Integer> pack, String fileName) throws Exception {
+    private static void loadPackFromFile(ArrayList<Integer> pack, String fileName) throws Exception {
         String line = "";
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             while ((line = br.readLine()) != null) {
-                
-                int number = Integer.parseInt(line);
-                if (number < 0) {
-                    throw new Exception("The pack given contains negative elements.");
+                try {
+                    int number = Integer.parseInt(line.trim());
+                    if (number < 0) {
+                        throw new Exception("The pack given contains negative elements.");
+                    }
+                    pack.add(number);
+                } catch (NumberFormatException e) {
+                    throw new NumberFormatException("The pack given contains a non-integer element: " + line);
                 }
-                pack.add(number);
             }
         } catch (IOException e) {
             throw new IOException("Error finding/reading file.");
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("The pack given contains a non integer element: " + line + "");
         }
     }
 
 
     /**
-     * Distribute the pack of cards to the players and decks
+     * Distribute the pack of cards to the players and decks.
      * @param pack The pack of cards to distribute
      */
     private void distributePack(ArrayList<Integer> pack) {
         int packCounter = 0;
 
         for (int i = 0; i < 4; i++) {
-            for (Player player : players) { // Fill players in round robin fashion
+            for (Player player : players) { // Fill players in round-robin fashion
                 player.addToHand(new Card(pack.get(packCounter)));
                 packCounter++;
             }
         }
-        for (int i = 0; i < players.size(); i++) { // Make blank decks
+        for (int i = 0; i < players.size(); i++) { // Create blank decks
             Deck deck = new Deck(i + 1);
             decks.add(deck);
         }
-        for (int i = 0; i < 4; i++) { // Fill decks in round robin fashion
+        for (int i = 0; i < 4; i++) { // Fill decks in round-robin fashion
             for (Deck deck : decks) {
                 deck.addToDeck(new Card(pack.get(packCounter)));
                 packCounter++;
             }
         }
     }
-    
+
 
     /**
      * Start the player threads and wait for them to finish
      * Print the winner and log the end-of-game deck contents
      */
-    private void startGame() {
+    private void startGame(int numberOfPlayers, ArrayList<Integer> pack) {
+        // Create the player objects
+        this.createPlayers(numberOfPlayers);
+        // Distribute the pack of cards to the players and decks
+        this.distributePack(pack);
+
+        // Start the player threads
         for (Player player : players) {
             Thread playerThread = new Thread(player);
             playerThreads.add(playerThread);
             playerThread.start();
         }
+        // Wait for all player threads to finish
         for (Thread playerThread : playerThreads) {
             try {
                 playerThread.join();
@@ -262,6 +260,7 @@ public class CardGame {
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                //Thread.currentThread().interrupt(); // TODO check if this is needed
             }
         }
         Card card = deck.drawFromTopDeck();
