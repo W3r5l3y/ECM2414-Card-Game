@@ -15,6 +15,7 @@ DESIGN TESTS
 We chose JUnit 5 for our project because it provides a more modern and flexible framework for writing and running unit tests.
 Annotations such as @BeforeEach, @AfterEach, and @DisplayName allow for greater readability and configurability, while Assertions and Assumptions provide more powerful and flexible testing conditions.
 
+Naming for test classes were test[function_name][sub_part_of_function] if multiple test functions were needed for the same function.
 
 --------------------------------------------------
 LOG
