@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.lang.reflect.Field;
 
 public class PlayerTest {
 
@@ -176,7 +176,35 @@ public class PlayerTest {
 
     @Test
     public void testGetWinner() {
-        assertEquals(-1, Player.getWinner(), "Winner should be -1");
+        // Use reflection to set the winner to -1
+        try {
+            Field winnerField = Player.class.getDeclaredField("winner");
+            winnerField.setAccessible(true);
+            winnerField.set(null, -1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting winner field");
+        }
+
+        // Force a player 2 win 
+        Player player2 = new Player(2, game);
+        
+        player2.addToHand(new Card(2));
+        player2.addToHand(new Card(2));
+        player2.addToHand(new Card(2));
+        player2.addToHand(new Card(2));
+
+        Thread playerThread = new Thread(player2);
+        playerThread.start();
+
+        try {
+            playerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        
+        assertEquals(2, Player.getWinner(), "Winner should be 2");
     }
 
     @Test
@@ -186,11 +214,248 @@ public class PlayerTest {
         player.addToHand(new Card(3));
         player.addToHand(new Card(4));
 
-        ArrayList<Card> expected = new ArrayList<>();
-        expected.add(new Card(1));
-        expected.add(new Card(2));
-        expected.add(new Card(3));
-        expected.add(new Card(4));
-        assertEquals(expected, player.getHand(), "Hand should contain 4 cards");
+        ArrayList<Integer> expected = new ArrayList<>();
+        expected.add(new Card(1).getValue());
+        expected.add(new Card(2).getValue());
+        expected.add(new Card(3).getValue());
+        expected.add(new Card(4).getValue());
+
+        ArrayList<Card> hand = null;
+        try {
+            Field handField = player.getClass().getDeclaredField("hand");
+            handField.setAccessible(true);
+            hand = (ArrayList<Card>) handField.get(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting hand field");
+        }
+
+        // loop through hand
+        ArrayList<Integer> actual = new ArrayList<>();
+        for (Card card : hand) {
+            actual.add(card.getValue());
+        }
+        
+        assertEquals(expected, actual, "Hand should contain 4 cards");
     }
+
+    @Test
+    public void testRemoveFromHand() {
+        Card card1 = new Card(1);
+        Card card2 = new Card(2);
+        Card card3 = new Card(3);
+        Card card4 = new Card(4);
+
+        player.addToHand(card1);
+        player.addToHand(card2);
+        player.addToHand(card3);
+        player.addToHand(card4);
+
+        try {
+            Method removeFromHandMethod = player.getClass().getDeclaredMethod("removeFromHand", Card.class);
+            removeFromHandMethod.setAccessible(true);
+            removeFromHandMethod.invoke(player, card2);
+            removeFromHandMethod.invoke(player, card4);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting hand field");
+        }
+
+        ArrayList<Integer> expected = new ArrayList<>();
+        expected.add(card1.getValue());
+        expected.add(card3.getValue());
+
+        ArrayList<Card> hand = null;
+        try {
+            Field handField = player.getClass().getDeclaredField("hand");
+            handField.setAccessible(true);
+            hand = (ArrayList<Card>) handField.get(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting hand field");
+        }
+
+        // loop through hand
+        ArrayList<Integer> actual = new ArrayList<>();
+        for (Card card : hand) {
+            actual.add(card.getValue());
+        }
+        
+        assertEquals(expected, actual, "Hand should contain 2 cards");
+    }
+
+    @Test
+    public void testDrawCard() {
+        // 1. Make a deck and fill it up with 4 cards
+        // 2. Reflect 'decks' field in CardGame and add the deck
+        // 2. Reflect drawCard method
+        // 3. Call drawCard method
+        // 4. Check the card values of the hand
+
+        Deck deck = new Deck(1);
+        deck.addToDeck(new Card(5));
+        deck.addToDeck(new Card(6));
+        deck.addToDeck(new Card(7));
+        deck.addToDeck(new Card(8));
+
+        // Add the deck to the game
+        ArrayList<Deck> decks = new ArrayList<>();
+        decks.add(deck);
+        try {
+            Field decksField = game.getClass().getDeclaredField("decks");
+            decksField.setAccessible(true);
+            decksField.set(game, decks);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting deck field");
+        }
+
+        try {
+            Method drawCardMethod = player.getClass().getDeclaredMethod("drawCard");
+            drawCardMethod.setAccessible(true);
+            drawCardMethod.invoke(player);
+            drawCardMethod.invoke(player);
+            drawCardMethod.invoke(player);
+            drawCardMethod.invoke(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting drawCard method");
+        }
+
+        ArrayList<Integer> expected = new ArrayList<>();
+        expected.add(5);
+        expected.add(6);
+        expected.add(7);
+        expected.add(8);
+
+        ArrayList<Card> hand = null;
+        try {
+            Field handField = player.getClass().getDeclaredField("hand");
+            handField.setAccessible(true);
+            hand = (ArrayList<Card>) handField.get(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting hand field");
+        }
+
+        ArrayList<Integer> actual = new ArrayList<>();
+        for (Card card : hand) {
+            actual.add(card.getValue());
+        }
+
+        assertEquals(expected, actual, "Hand should be drawn from deck");
+    }
+
+    @Test
+    public void testDiscardCard() {
+        // Create a first player 
+        Player player1 = new Player(1, game);
+        player1.addToHand(new Card(1));
+        player1.addToHand(new Card(1));
+        player1.addToHand(new Card(3));
+        player1.addToHand(new Card(1));
+        player1.addToHand(new Card(5));
+
+        // Create a second player
+        Player player2 = new Player(2, game);
+        player2.addToHand(new Card(2));
+        player2.addToHand(new Card(5));
+        player2.addToHand(new Card(6));
+        player2.addToHand(new Card(1));
+
+        // Create a first deck
+        Deck deck1 = new Deck(1);
+        deck1.addToDeck(new Card(1));
+        deck1.addToDeck(new Card(2));
+        deck1.addToDeck(new Card(4));
+
+        // Create a second deck
+        Deck deck2 = new Deck(2);
+        deck2.addToDeck(new Card(5));
+        deck2.addToDeck(new Card(6));
+        deck2.addToDeck(new Card(7));
+        deck2.addToDeck(new Card(8));
+
+        // Add the 2 players to the game
+        ArrayList<Player> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        try {
+            Field playersField = game.getClass().getDeclaredField("players");
+            playersField.setAccessible(true);
+            playersField.set(game, players);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting players field");
+        }
+
+        // Add the 2 decks to the game
+        ArrayList<Deck> decks = new ArrayList<>();
+        decks.add(deck1);
+        decks.add(deck2);
+        try {
+            Field decksField = game.getClass().getDeclaredField("decks");
+            decksField.setAccessible(true);
+            decksField.set(game, decks);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting deck field");
+        }
+
+        // Reflect discardCard method
+        try {
+            Method discardCardMethod = player1.getClass().getDeclaredMethod("discardCard");
+            discardCardMethod.setAccessible(true);
+            discardCardMethod.invoke(player1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting discardCard method");
+        }
+
+        // Check the hand of player1
+        ArrayList<Integer> expected = new ArrayList<>();
+        expected.add(1);
+        expected.add(1);
+        expected.add(1);
+        expected.add(5);
+
+        ArrayList<Card> hand = null;
+        try {
+            Field handField = player1.getClass().getDeclaredField("hand");
+            handField.setAccessible(true);
+            hand = (ArrayList<Card>) handField.get(player1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting hand field");
+        }
+
+        ArrayList<Integer> actual = new ArrayList<>();
+        for (Card card : hand) {
+            actual.add(card.getValue());
+        }
+
+        assertEquals(expected, actual, "Hand should have discarded the 3");
+    }
+
+    @Test
+    public void testCheckWin() {
+        Player player3 = new Player(3, game);
+
+        player3.addToHand(new Card(3));
+        player3.addToHand(new Card(3));
+        player3.addToHand(new Card(3));
+        player3.addToHand(new Card(3));
+
+        boolean actual = false;
+        try {
+            Method checkWinMethod = player3.getClass().getDeclaredMethod("checkWin");
+            checkWinMethod.setAccessible(true);
+            actual = (boolean) checkWinMethod.invoke(player3);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting checkWin method");
+        }
+
+        assertEquals(true, actual, "A player should have won the game");
+    } 
 }
