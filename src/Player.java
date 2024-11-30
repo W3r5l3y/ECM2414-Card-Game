@@ -90,16 +90,6 @@ public class Player implements Runnable {
 
 
     /**
-     * Prints the current hand of the player to the console. Used for testing purposes.
-     */
-    public void printHand() { // TODO REMOVE AFTER TESTING
-        for (Card card : hand) {
-            System.out.println("Player " + playerNumber + ": " + card.getValue());
-        }
-    }
-
-
-    /**
      * Logs the current hand of the player to a file.
      *
      * @param handState A string representing the state of the hand (e.g., "initial", "current", "final").
