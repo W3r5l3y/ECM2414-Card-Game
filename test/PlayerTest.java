@@ -168,4 +168,29 @@ public class PlayerTest {
 
         file.delete(); // Clean up after test
     }
+
+    @Test
+    public void testGetPlayerNumber() {
+        assertEquals(1, player.getPlayerNumber(), "Player number should be 1");
+    }
+
+    @Test
+    public void testGetWinner() {
+        assertEquals(-1, Player.getWinner(), "Winner should be -1");
+    }
+
+    @Test
+    public void testAddToHand() {
+        player.addToHand(new Card(1));
+        player.addToHand(new Card(2));
+        player.addToHand(new Card(3));
+        player.addToHand(new Card(4));
+
+        ArrayList<Card> expected = new ArrayList<>();
+        expected.add(new Card(1));
+        expected.add(new Card(2));
+        expected.add(new Card(3));
+        expected.add(new Card(4));
+        assertEquals(expected, player.getHand(), "Hand should contain 4 cards");
+    }
 }
