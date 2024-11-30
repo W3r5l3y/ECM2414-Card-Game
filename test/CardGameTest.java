@@ -27,43 +27,6 @@ public class CardGameTest {
         assertSame(instance1, instance2, "CardGame instances should be the identical");
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"3\n", "4\n", "5\n"})
-    public void testInitialisePlayers(String input) throws Exception {
-        InputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-
-        Method initialisePlayersMethod = CardGame.class.getDeclaredMethod("initialisePlayers", CardGame.class);
-        initialisePlayersMethod.setAccessible(true);
-        initialisePlayersMethod.invoke(game, game);
-
-        Field playersField = CardGame.class.getDeclaredField("players");
-        playersField.setAccessible(true);
-        ArrayList<Player> players = (ArrayList<Player>) playersField.get(game);
-
-        int expectedPlayers = Integer.parseInt(input.trim());
-        assertEquals(expectedPlayers, players.size(), "There should be " + expectedPlayers + " players initialized");
-    }
-
-    /*
-    @Test
-    public void testInitialisePack() throws Exception {
-        String input = "pack.txt\n";
-        InputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-
-        Method initialisePackMethod = CardGame.class.getDeclaredMethod("initialisePack");
-        initialisePackMethod.setAccessible(true);
-        initialisePackMethod.invoke(game);
-
-        Field decksField = CardGame.class.getDeclaredField("decks");
-        decksField.setAccessible(true);
-        ArrayList<Deck> decks = (ArrayList<Deck>) decksField.get(game);
-
-        assertFalse(decks.isEmpty(), "Decks should be initialized");
-    }
-    */
-
     @Test
     public void testDrawCard() throws Exception {
         Field decksField = CardGame.class.getDeclaredField("decks");

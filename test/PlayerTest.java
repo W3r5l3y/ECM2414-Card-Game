@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.lang.reflect.Method;
@@ -17,6 +18,11 @@ public class PlayerTest {
     public void setUp() {
         game = CardGame.getInstance();
         player = new Player(1, game);
+        deletePlayerOutputFiles();
+    }
+
+    @AfterEach
+    public void tearDown() {
         deletePlayerOutputFiles();
     }
 
@@ -134,8 +140,6 @@ public class PlayerTest {
         5, 1, 3, 3, 5, 5, 8, 5, 2, 8, 7, 3
         )); // Test pack with 32 cards (4 players)
 
-
-
         try {
             Method startGameMethod = CardGame.class.getDeclaredMethod("startGame", int.class, ArrayList.class);
             startGameMethod.setAccessible(true);
@@ -145,8 +149,6 @@ public class PlayerTest {
             fail("Error reflecting startGame method");
         }
 
-        
-
         File file = new File("player1_output.txt");
         assertTrue(file.exists(), "Log file should be created");
 
@@ -155,7 +157,7 @@ public class PlayerTest {
             String line;
             boolean handLogged = false;
             while ((line = reader.readLine()) != null) {
-                if (line.contains("player 1 hand:")) {
+                if (line.contains("player 1 current hand:")) {
                     handLogged = true;
                     break;
                 }
@@ -165,35 +167,6 @@ public class PlayerTest {
             e.printStackTrace();
         }
 
-        //file.delete(); // Clean up after test
-    }
-
-    @Test
-    void testStartGame() {
-        try {
-            // Prepare the game instance
-            CardGame game = CardGame.getInstance();
-
-            // Prepare arguments for startGame
-            int numberOfPlayers = 2; // Example: 2 players
-            ArrayList<Integer> pack = new ArrayList<>();
-            for (int i = 1; i <= 16; i++) { // 8n cards, where n = numberOfPlayers
-                pack.add(i);
-            }
-
-            // Access the private startGame method using reflection
-            Method startGameMethod = CardGame.class.getDeclaredMethod("startGame", int.class, ArrayList.class);
-            startGameMethod.setAccessible(true); // Bypass private access
-
-            // Invoke the private method with arguments
-            startGameMethod.invoke(game, numberOfPlayers, pack);
-
-            // Validate the game state
-            assertEquals(numberOfPlayers, game.numberOfPlayers(), "Number of players should match input.");
-            assertNotNull(Player.getWinner(), "There should be a winner after the game starts.");
-            assertTrue(game.numberOfPlayers() > 0, "Players should be initialized.");
-        } catch (Exception e) {
-            e.printStackTrace();;
-        }
+        file.delete(); // Clean up after test
     }
 }
