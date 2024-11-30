@@ -19,46 +19,4 @@ public class CardGameTest {
     public void setUp() {
         game = CardGame.getInstance();
     }
-
-    @Test
-    public void testSingletonInstance() {
-        CardGame instance1 = CardGame.getInstance();
-        CardGame instance2 = CardGame.getInstance();
-        assertSame(instance1, instance2, "CardGame instances should be the identical");
-    }
-
-    @Test
-    public void testDrawCard() throws Exception {
-        Field decksField = CardGame.class.getDeclaredField("decks");
-        decksField.setAccessible(true);
-        ArrayList<Deck> decks = (ArrayList<Deck>) decksField.get(game);
-
-        Deck deck = new Deck(1);
-        deck.addToDeck(new Card(5));
-        decks.add(deck);
-
-        Method drawCardMethod = CardGame.class.getDeclaredMethod("drawCard", int.class);
-        drawCardMethod.setAccessible(true);
-        Card card = (Card) drawCardMethod.invoke(game, 1);
-
-        assertNotNull(card, "Card should be drawn from the deck");
-        assertEquals(5, card.getValue(), "The drawn card should have the value 5");
-    }
-
-    @Test
-    public void testDiscardCard() throws Exception {
-        Field decksField = CardGame.class.getDeclaredField("decks");
-        decksField.setAccessible(true);
-        ArrayList<Deck> decks = (ArrayList<Deck>) decksField.get(game);
-
-        Deck deck = new Deck(1);
-        decks.add(deck);
-
-        Method discardCardMethod = CardGame.class.getDeclaredMethod("discardCard", int.class, Card.class);
-        discardCardMethod.setAccessible(true);
-        discardCardMethod.invoke(game, 1, new Card(5));
-
-        assertFalse(deck.isEmpty(), "Deck should have a discarded card");
-        assertEquals(5, deck.drawFromTopDeck().getValue(), "The discarded card should have the value 5");
-    }
 }

@@ -23,6 +23,8 @@ public class PlayerTest {
 
     @AfterEach
     public void tearDown() {
+        game = null;
+        player = null;
         deletePlayerOutputFiles();
     }
 
@@ -133,20 +135,17 @@ public class PlayerTest {
 
     @Test
     public void testRunLogCurrentHand() {
-        game = CardGame.getInstance();
-        int numberOfPlayers = 4;
-        ArrayList<Integer> pack = new ArrayList<>(Arrays.asList(
-        2, 1, 6, 7, 1, 6, 7, 2, 6, 8, 8, 7, 3, 7, 1, 8, 6, 2, 2, 6, 
-        5, 1, 3, 3, 5, 5, 8, 5, 2, 8, 7, 3
-        )); // Test pack with 32 cards (4 players)
+        // 1. Get the logCurrentHand method using reflection
+        // 2. Call the method
+        // 3. Check if the log file contains the current hand
 
         try {
-            Method startGameMethod = CardGame.class.getDeclaredMethod("startGame", int.class, ArrayList.class);
-            startGameMethod.setAccessible(true);
-            startGameMethod.invoke(game, numberOfPlayers, pack);
+            Method logCurrentHandMethod = Player.class.getDeclaredMethod("logCurrentHand", String.class);
+            logCurrentHandMethod.setAccessible(true);
+            logCurrentHandMethod.invoke(player, "current");
         } catch (Exception e) {
             e.printStackTrace();
-            fail("Error reflecting startGame method");
+            fail("Error reflecting logCurrentHand method");
         }
 
         File file = new File("player1_output.txt");
