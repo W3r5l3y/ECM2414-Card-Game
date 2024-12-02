@@ -8,6 +8,8 @@ Deck 'deck' volatile.
 drawCard synchronized.
 discardCard synchronized.
 wait() in deck.isEmpty() loop in drawCard to prevent player from drawing from empty deck. notifyAll() in after discardCard() execution to get waiting threads to check their pack.
+-- SINGLETON STUFF
+
 
 --------------------------------------------------
 DESIGN TESTS
