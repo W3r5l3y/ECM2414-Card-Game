@@ -2,15 +2,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,6 +53,16 @@ public class CardGameTest {
             Field decksField = game.getClass().getDeclaredField("decks");
             decksField.setAccessible(true);
             decksField.set(game, decks);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting hand field");
+        }
+
+        // Reflect player field set and reset winner field to -1
+        try {
+            Field winnerField = Player.class.getDeclaredField("winner");
+            winnerField.setAccessible(true);
+            winnerField.set(null, -1);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error reflecting hand field");
@@ -465,5 +478,95 @@ public class CardGameTest {
             actual.add(card.getValue());
         }
         assertEquals(deck2Expected, actual, "Expected deck 2 cards not equal to actual deck 2 cards");
+    }
+
+    @Test
+    public void testStartGame() {
+        // 1. Add players to game object
+        // 2. Add pack to game object
+        // 3. DOOO!
+        // 4. Clean up generated output.txt files
+
+        // Create a valid pack for two players
+        ArrayList<Integer> packP1Wins = new ArrayList<>(Arrays.asList(1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5));
+        ArrayList<Integer> packP2Wins = new ArrayList<>(Arrays.asList(1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5));
+
+        // ----- Player 1 wins -----
+        
+        // Reflect startGame method to start the game
+        Method startGameMethod = null;
+        try {
+            startGameMethod = game.getClass().getDeclaredMethod("startGame", int.class, ArrayList.class);
+            startGameMethod.setAccessible(true);
+            startGameMethod.invoke(game, 2, packP1Wins);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Check output for correctness
+        String expected = "player 1 wins";
+        File file = new File("player1_output.txt");
+        assertTrue(file.exists());
+        // Read the file and check the contents
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("player1_output.txt"));
+            String line;
+            boolean found = false;
+            while ((line = br.readLine()) != null) {
+                if (line.contains(expected)) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Clean up generated output.txt files
+        file = new File("player1_output.txt");
+        file.delete();
+        file = new File("player2_output.txt");
+        file.delete();
+        file = new File("deck1_output.txt");
+        file.delete();
+        file = new File("deck2_output.txt");
+
+        // Reset the game object
+        setUp();
+
+        // ----- Player 2 wins -----
+        
+        // Reflect startGame method to start the game
+        startGameMethod = null;
+        try {
+            startGameMethod = game.getClass().getDeclaredMethod("startGame", int.class, ArrayList.class);
+            startGameMethod.setAccessible(true);
+            startGameMethod.invoke(game, 2, packP2Wins);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Check output for correctness
+        expected = "player 2 wins";
+        file = new File("player2_output.txt");
+        assertTrue(file.exists());
+        // Read the file and check the contents
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("player2_output.txt"));
+            String line;
+            boolean found = false;
+            while ((line = br.readLine()) != null) {
+                if (line.contains(expected)) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
