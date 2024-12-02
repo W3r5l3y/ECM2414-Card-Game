@@ -45,6 +45,8 @@ public class CardGame {
      */
     public static void main(String[] args) {
         // Delete any existing output files
+        // "\\d+" matches one or more digits.
+        // "\\.txt" matches ".txt" literally (escaped dot)
         deleteOutputFiles("player\\d+_output\\.txt");
         deleteOutputFiles("deck\\d+_output\\.txt");
 
