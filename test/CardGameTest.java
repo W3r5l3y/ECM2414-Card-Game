@@ -482,11 +482,6 @@ public class CardGameTest {
 
     @Test
     public void testStartGame() {
-        // 1. Add players to game object
-        // 2. Add pack to game object
-        // 3. DOOO!
-        // 4. Clean up generated output.txt files
-
         // Create a valid pack for two players
         ArrayList<Integer> packP1Wins = new ArrayList<>(Arrays.asList(1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5));
         ArrayList<Integer> packP2Wins = new ArrayList<>(Arrays.asList(1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5));
@@ -532,6 +527,7 @@ public class CardGameTest {
         file = new File("deck1_output.txt");
         file.delete();
         file = new File("deck2_output.txt");
+        file.delete();
 
         // Reset the game object
         setUp();
@@ -568,5 +564,187 @@ public class CardGameTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Clean up generated output.txt files
+        file = new File("player1_output.txt");
+        file.delete();
+        file = new File("player2_output.txt");
+        file.delete();
+        file = new File("deck1_output.txt");
+        file.delete();
+        file = new File("deck2_output.txt");
+        file.delete();
+    }
+
+    @Test
+    public void testDrawCard() {
+        // Create a valid pack for two players
+        ArrayList<Integer> pack = new ArrayList<>(Arrays.asList( 1, 1, 1, 2, 2, 2, 3, 4));
+
+        // Reflect createPlayers method to create 1 player in game object
+        Method createPlayers = null; 
+        try {
+            createPlayers = game.getClass().getDeclaredMethod("createPlayers", int.class);
+            createPlayers.setAccessible(true);
+            createPlayers.invoke(game, 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Reflect distributePack method to distribute pack to players and decks
+        Method distributePackMethod = null;
+        try {
+            distributePackMethod = game.getClass().getDeclaredMethod("distributePack", ArrayList.class);
+            distributePackMethod.setAccessible(true);
+            distributePackMethod.invoke(game, pack);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Assert contents of player 1 hand and deck 1 before draw
+        Player player = null;
+        Deck deck = null;
+        try {
+            Field playersField = game.getClass().getDeclaredField("players");
+            playersField.setAccessible(true);
+            ArrayList<Player> players = (ArrayList<Player>) playersField.get(game);
+            player = players.get(0);
+            Field decksField = game.getClass().getDeclaredField("decks");
+            decksField.setAccessible(true);
+            ArrayList<Deck> decks = (ArrayList<Deck>) decksField.get(game);
+            deck = decks.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Field playerHand = null;
+        Field deckCards = null;
+        ArrayList<Card> hand = null;
+        ArrayList<Card> cards = null;
+        try {
+            playerHand = player.getClass().getDeclaredField("hand");
+            playerHand.setAccessible(true);
+            hand = (ArrayList<Card>) playerHand.get(player);
+            deckCards = deck.getClass().getDeclaredField("deck");
+            deckCards.setAccessible(true);
+            cards = (ArrayList<Card>) deckCards.get(deck);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<Integer> expectedHand = new ArrayList<>(Arrays.asList(1, 1, 1, 2));
+        ArrayList<Integer> expectedDeck = new ArrayList<>(Arrays.asList(2, 2, 3, 4));
+
+        ArrayList<Integer> actualHand = new ArrayList<>();
+        ArrayList<Integer> actualDeck = new ArrayList<>();
+        
+
+        for (Card card:hand) {
+            actualHand.add((card.getValue()));
+        }
+        assertEquals(expectedHand, actualHand, "Expected player 1 hand not equal to actual player 1 hand");
+
+        for (Card card:cards) {
+            actualDeck.add((card.getValue()));
+        }
+        assertEquals(expectedDeck, actualDeck, "Expected deck 1 cards not equal to actual deck 1 cards");
+
+        // Reflect drawCard method to draw a card for player 1
+        Method drawCardMethod = null;
+        try {
+            drawCardMethod = game.getClass().getDeclaredMethod("drawCard", int.class);
+            drawCardMethod.setAccessible(true);
+            Card drawncard = (Card) drawCardMethod.invoke(game, 1);
+            assertEquals(2, drawncard.getValue(), "Expected drawn card value does not equal actual drawn card value");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Assert contents of player 1 hand and deck 1 after draw
+        
+        expectedHand = new ArrayList<>(Arrays.asList(1, 1, 1, 2));
+        expectedDeck = new ArrayList<>(Arrays.asList(2, 3, 4));
+
+        actualHand = new ArrayList<>();
+        actualDeck = new ArrayList<>();
+
+        for (Card card:hand) {
+            actualHand.add((card.getValue()));
+        }
+        assertEquals(expectedHand, actualHand, "Expected player 1 hand equal to actual player 1 hand");
+
+        for (Card card:cards) {
+            actualDeck.add((card.getValue()));
+        }
+        assertEquals(expectedDeck, actualDeck, "Expected deck 1 cards not equal to actual deck 1 cards");
+    }
+
+    @Test
+    public void testDiscardCard() {
+        // Reflect createPlayers method to create 1 player in game object
+        Method createPlayers = null; 
+        try {
+            createPlayers = game.getClass().getDeclaredMethod("createPlayers", int.class);
+            createPlayers.setAccessible(true);
+            createPlayers.invoke(game, 2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Field decksField = null;
+        ArrayList<Deck> decks = new ArrayList<>();
+        decks.add(new Deck(1));
+        decks.add(new Deck(2));
+        try {
+            decksField = game.getClass().getDeclaredField("decks");
+            decksField.setAccessible(true);
+            decksField.set(game, decks);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Method discardCardMethod = null;
+        try {
+            discardCardMethod = game.getClass().getDeclaredMethod("discardCard", int.class, Card.class);
+            discardCardMethod.setAccessible(true);
+            discardCardMethod.invoke(game, 1, new Card(3));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        Deck deck2 = null;
+        try {
+            decksField = game.getClass().getDeclaredField("decks");
+            decksField.setAccessible(true);
+            deck2 = ((ArrayList<Deck>) decksField.get(game)).get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        int deck2Card = -1;
+        Field deckField = null;
+        try {
+            deckField = deck2.getClass().getDeclaredField("deck");
+            deckField.setAccessible(true);
+            deck2Card = ((ArrayList<Card>) deckField.get(decks.get(1))).get(0).getValue();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(3, deck2Card, "Expected discarded card value not equal to actual discarded card value");
+    }
+
+    @Test
+    public void testNumberOfPlayers() {
+        assertEquals(0, game.numberOfPlayers());
+        Method createPlayers = null;
+        try {
+            createPlayers = game.getClass().getDeclaredMethod("createPlayers", int.class);
+            createPlayers.setAccessible(true);
+            createPlayers.invoke(game, 2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertEquals(2, game.numberOfPlayers());
     }
 }
