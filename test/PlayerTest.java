@@ -413,28 +413,56 @@ public class PlayerTest {
         }
 
         // Check the hand of player1
-        ArrayList<Integer> expected = new ArrayList<>();
-        expected.add(1);
-        expected.add(1);
-        expected.add(1);
-        expected.add(5);
+        ArrayList<Integer> expectedPlayer1 = new ArrayList<>();
+        expectedPlayer1.add(1);
+        expectedPlayer1.add(1);
+        expectedPlayer1.add(1);
+        expectedPlayer1.add(5);
 
-        ArrayList<Card> hand = null;
+        // Check the contents of deck2
+        ArrayList<Integer> expectedDeck2 = new ArrayList<>();
+        expectedDeck2.add(5);
+        expectedDeck2.add(6);
+        expectedDeck2.add(7);
+        expectedDeck2.add(8);
+        expectedDeck2.add(3);
+
+        // Reflect player1 hand field
+        ArrayList<Card> player1Hand = null;
         try {
             Field handField = player1.getClass().getDeclaredField("hand");
             handField.setAccessible(true);
-            hand = (ArrayList<Card>) handField.get(player1);
+            player1Hand = (ArrayList<Card>) handField.get(player1);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error reflecting hand field");
         }
 
-        ArrayList<Integer> actual = new ArrayList<>();
-        for (Card card : hand) {
-            actual.add(card.getValue());
+        // Reflect deck2 deck field
+        ArrayList<Card> deck2Value = new ArrayList<>();
+        try {
+            Field deck2Field = deck2.getClass().getDeclaredField("deck");
+            deck2Field.setAccessible(true);
+            deck2Value = (ArrayList<Card>) deck2Field.get(deck2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error reflecting deck field");
         }
 
-        assertEquals(expected, actual, "Hand should have discarded the 3");
+        // Loop through player1 hand and add the values to an arraylist
+        ArrayList<Integer> actualPlayer1 = new ArrayList<>();
+        for (Card card : player1Hand) {
+            actualPlayer1.add(card.getValue());
+        }
+
+        // Loop through deck2 and add the values to an arraylist
+        ArrayList<Integer> actualDeck2 = new ArrayList<>();
+        for (Card card : deck2Value) {
+            actualDeck2.add(card.getValue());
+        }
+
+        assertEquals(expectedPlayer1, actualPlayer1, "Hand should have discarded the 3");
+        assertEquals(expectedDeck2, actualDeck2, "Deck 2 should have received the 3 on the bottom");
     }
 
     @Test
