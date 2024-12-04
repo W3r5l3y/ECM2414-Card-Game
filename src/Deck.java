@@ -28,12 +28,6 @@ public class Deck {
         return deck.isEmpty();
     }
 
-    public void printDeck() { // TODO Remove testing method
-        for (Card card : deck) {
-            System.out.println("Deck " + deckNumber + ": " + card.getValue());
-        }
-    }
-
     public void logDeck() {
         String fileName = "deck" + deckNumber + "_output.txt";
         StringBuilder deckValues = new StringBuilder();

@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
@@ -13,13 +14,33 @@ public class DeckTest {
     private Card card3;
     private Card card4;
 
+    /**
+     * Delete output files matching a specific regex pattern.
+     */
+    private static void deleteOutputFiles(String filename) {
+        File[] files = new File(".").listFiles((dir, name) -> name.matches(filename));
+        if (files != null) {
+            for (File file : files) {
+                file.delete();
+            }
+        } else {
+            System.out.println("No matching files found.");
+        }
+    }
+
     @BeforeEach
     public void setUp() {
+        deleteOutputFiles("deck\\d+_output\\.txt");
         deck = new Deck(1); // Create empty deck
-        card1 = new Card(2); // Initialise cards
+        card1 = new Card(2); // Initialize cards
         card2 = new Card(5);
         card3 = new Card(1);
         card4 = new Card(7);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        deleteOutputFiles("deck\\d+_output\\.txt");
     }
 
     @Test

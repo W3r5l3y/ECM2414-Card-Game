@@ -2,12 +2,17 @@
 DESIGN PRODUCTION CODE
 ----------
 
-Considered random choice of card removal, so no live-lock. Then realised it was pointless, so now not random.
+Considered random choice of card removal, so no live-lock. Then realized it was pointless, so now not random.
 Player 'hand' volatile.
 Deck 'deck' volatile.
 drawCard synchronized.
 discardCard synchronized.
 wait() in deck.isEmpty() loop in drawCard to prevent player from drawing from empty deck. notifyAll() in after discardCard() execution to get waiting threads to check their pack.
+-- SINGLETON STUFF
+Ensures that a class has only one instance, and provides a global point of access to it
+We used a "lazy" initialization
+-- Extra functions? (only write if we need to fill space)
+DeleteAllOutputFiles used to ensure that there are no output files present before the game runs
 
 --------------------------------------------------
 DESIGN TESTS

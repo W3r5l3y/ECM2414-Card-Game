@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
 import java.io.File;
 import java.io.FileWriter;
 
@@ -9,11 +8,24 @@ public class Player implements Runnable {
     private CardGame game;
     private static volatile int winner = -1;
 
+
+    /**
+     * Constructor for the Player class.
+     * Initializes the player number and the game.
+     * @param playerNumber
+     * @param game
+     */
     public Player(int playerNumber, CardGame game) {
         this.playerNumber = playerNumber;
         this.game = game;
     }
 
+
+    /**
+     * Runs the player thread.
+     * This method is called when the thread is started.
+     * The player thread will run until a winner is declared.
+     */
     @Override
     public void run() {
         // Thread logic for player
@@ -40,27 +52,42 @@ public class Player implements Runnable {
         logCurrentHand("final");
     }
 
+
+    /**
+     * Returns the player number of the player.
+     * @return The player number of the player.
+     */
     public int getPlayerNumber() {
         return playerNumber;
     }
 
+
+    /**
+     * Returns the player number of the winning player.
+     * @return The player number of the winning player.
+     */
     public static int getWinner() {
         return winner;
     }
 
+
+    /**
+     * Adds a card to the player's hand.
+     * @param card
+     */
     public void addToHand(Card card) {
         hand.add(card);
     }
 
+
+    /**
+     * Adds a card to the player's hand.
+     * @param card
+     */
     private void removeFromHand(Card card) {
         hand.remove(card);
     }
 
-    public void printHand() { // TODO REMOVE AFTER TESTING
-        for (Card card : hand) {
-            System.out.println("Player " + playerNumber + ": " + card.getValue());
-        }
-    }
 
     /**
      * Logs the current hand of the player to a file.
@@ -84,6 +111,12 @@ public class Player implements Runnable {
         }
     }
 
+
+    /**
+     * Logs a message to the player's output file.
+     *
+     * @param message The message to log.
+     */
     private void logMessage(String message) {
         String fileName = "player" + playerNumber + "_output.txt";
         try {
@@ -97,6 +130,7 @@ public class Player implements Runnable {
         }
     }
 
+
     /**
      * Draws a card from the deck and adds it to the player's hand.
      */
@@ -106,6 +140,7 @@ public class Player implements Runnable {
         String message = "player " + playerNumber + " draws a " + drawnCard.getValue() + " from deck " + playerNumber;
         logMessage(message);
     }
+
 
     /**
      * Discards a card from the player's hand.
@@ -126,6 +161,11 @@ public class Player implements Runnable {
         logMessage(message);
     }
 
+
+    /**
+     * Checks if the player has won the game.
+     * @return
+     */
     private boolean checkWin() {
         int firstValue = hand.get(0).getValue();
         for (int i = 1; i < hand.size(); i++) {
