@@ -7,16 +7,22 @@ import java.util.ArrayList;
 
 
 /**
- * The CardGame class is a singleton class that represents the card game
- * It contains the main method to start the game, and methods to initialize the players and pack of cards
- * It also contains methods to distribute the pack of cards to the players and decks, and to start the game
- * The CardGame class also contains methods to draw and discard cards from the decks, which are synchronized and used by the Player class
+ * The CardGame class is a singleton class that represents the card game.
+ * It contains the main method to start the game, and methods to create players,
+ * distribute the pack of cards, start the game, draw and discard cards, and
+ * get the number of players in the game.
+ * 
+ * @author Sam McMullen
+ * @author James Worley
  */
 public class CardGame {
-
+    /** The list of players in the game */
     private ArrayList<Player> players = new ArrayList<>();
+    /** The list of player threads in the game */
     private ArrayList<Thread> playerThreads = new ArrayList<>();
+    /** The list of decks in the game */
     private ArrayList<Deck> decks = new ArrayList<>();
+
 
     /**
      * Singleton constructor for the CardGame class
@@ -66,6 +72,7 @@ public class CardGame {
 
     /**
      * Delete output files matching a specific regex pattern.
+     * @param filename The regex pattern to match the files to delete
      */
     private static void deleteOutputFiles(String filename) {
         File[] files = new File(".").listFiles((dir, name) -> name.matches(filename));
@@ -78,15 +85,16 @@ public class CardGame {
         }
     }
 
+
     /**
      * Get the number of players from a terminal input and create the player objects
-     * @param game The game object
+     * @return The number of players in the game
      */
     private static int getNumberOfPlayers() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         int numberOfPlayers;
 
-        // Ask for number of players
+        // Get the number of players from the user (loop until valid input)
         while (true) {
             System.out.println("Please enter the number of players: ");
             try {
@@ -110,7 +118,6 @@ public class CardGame {
     /**
      * Create the player objects and add them to the players list
      * @param numOfPlayers The number of players to create
-     * @param game The game object
      */
     private void createPlayers(int numOfPlayers) {
         for (int i = 1; i <= numOfPlayers; i++) {
@@ -123,12 +130,14 @@ public class CardGame {
     /**
      * Prompt the user to input a file name, read the file, validate its contents,
      * and return a valid pack of cards.
-     * @return The validated pack of cards
+     * @param numberOfPlayers The number of players in the game
+     * @return The valid pack of cards
      */
     private static ArrayList<Integer> getPack(int numberOfPlayers) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         ArrayList<Integer> pack = new ArrayList<>();
         
+        // Get the pack of cards from the user (loop until valid input)
         while (true) {
             System.out.println("Please enter the location of the pack to load: ");
             try {
@@ -168,6 +177,7 @@ public class CardGame {
     private static void loadPackFromFile(ArrayList<Integer> pack, String fileName) throws Exception {
         String line = "";
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            // Read the file line by line and add the numbers to the pack
             while ((line = br.readLine()) != null) {
                 try {
                     int number = Integer.parseInt(line.trim());
@@ -214,6 +224,8 @@ public class CardGame {
     /**
      * Start the player threads and wait for them to finish
      * Print the winner and log the end-of-game deck contents
+     * @param numberOfPlayers The number of players in the game
+     * @param pack The pack of cards to distribute
      */
     private void startGame(int numberOfPlayers, ArrayList<Integer> pack) {
         // Create the player objects

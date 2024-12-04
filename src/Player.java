@@ -2,10 +2,20 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
 
+
+/**
+ * Player class represents a player in the card game and the methods to manipulate the player.
+ * @author Sam McMullen
+ * @author James Worley
+ */
 public class Player implements Runnable {
+    /**The player number.*/
     private int playerNumber;
+    /**The player's hand.*/
     private volatile ArrayList<Card> hand = new ArrayList<>();
+    /**The game instance the player is a part of.*/
     private CardGame game;
+    /**The winning player number. -1 if no winner. When a player wins they wil change this to notify the other players.*/
     private static volatile int winner = -1;
 
 
@@ -33,6 +43,7 @@ public class Player implements Runnable {
         if (checkWin() == true) {
             winner = playerNumber;
         }
+        // Game loop
         while (winner == -1) {
             drawCard();
             discardCard();
@@ -73,7 +84,7 @@ public class Player implements Runnable {
 
     /**
      * Adds a card to the player's hand.
-     * @param card
+     * @param card The card to add to the player's hand.
      */
     public void addToHand(Card card) {
         hand.add(card);
@@ -82,7 +93,7 @@ public class Player implements Runnable {
 
     /**
      * Adds a card to the player's hand.
-     * @param card
+     * @param card The card to remove from the player's hand.
      */
     private void removeFromHand(Card card) {
         hand.remove(card);
@@ -91,8 +102,7 @@ public class Player implements Runnable {
 
     /**
      * Logs the current hand of the player to a file.
-     *
-     * @param handState A string representing the state of the hand (e.g., "initial", "current", "final").
+     * @param handState A string representing the state of the hand ("initial", "current", "final").
      */
     private void logCurrentHand(String handState) {
         String fileName = "player" + playerNumber + "_output.txt";
@@ -114,7 +124,6 @@ public class Player implements Runnable {
 
     /**
      * Logs a message to the player's output file.
-     *
      * @param message The message to log.
      */
     private void logMessage(String message) {
@@ -143,7 +152,7 @@ public class Player implements Runnable {
 
 
     /**
-     * Discards a card from the player's hand.
+     * Discards a card from the player's hand to the next deck.
      */
     private void discardCard() {
         // Logic to check which card to discard
@@ -154,7 +163,8 @@ public class Player implements Runnable {
                 break;
             }
         }
-        
+
+        // Discarding the card
         game.discardCard(playerNumber, discardedCard);
         removeFromHand(discardedCard);
         String message = "player " + playerNumber + " discards a " + discardedCard.getValue() + " to deck " + ((playerNumber % game.numberOfPlayers()) + 1);
@@ -164,7 +174,7 @@ public class Player implements Runnable {
 
     /**
      * Checks if the player has won the game.
-     * @return
+     * @return true if the player has won, false otherwise.
      */
     private boolean checkWin() {
         int firstValue = hand.get(0).getValue();
