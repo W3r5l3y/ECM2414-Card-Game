@@ -38,8 +38,6 @@ ECM2414-Card-Game/
    cd ECM2414-Card-Game
    ```
 
-````
-
 2. **Compile the source code:**
 
    ```sh
@@ -74,4 +72,7 @@ The test suite includes the following test classes:
 - `DeckTest.java`: Tests for the `Deck` class.
 - `CardTest.java`: Tests for the `Card` class.
 - `PlayerTest.java`: Tests for the `Player` class.
-````
+
+```
+
+```
