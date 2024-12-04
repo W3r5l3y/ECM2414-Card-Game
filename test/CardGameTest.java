@@ -68,6 +68,7 @@ public class CardGameTest {
         }
     }
 
+
     @AfterEach
     public void tearDown() {
         game = null;
@@ -87,6 +88,7 @@ public class CardGameTest {
             e.printStackTrace();
         }
     }
+
 
     @Test void testGetInstance() {
         CardGame game1 = CardGame.getInstance();
@@ -120,6 +122,7 @@ public class CardGameTest {
         assertFalse(file.exists());
     }
     
+
     @Test
     public void testGetNumberOfPlayers() {
         // Simulated inputs (invalid, invalid, invalid, invalid, valid)
@@ -166,6 +169,7 @@ public class CardGameTest {
         System.setOut(System.out);
     }
 
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCreatePlayers(){
@@ -208,6 +212,7 @@ public class CardGameTest {
         // Assert correct behavior
         assertEquals(expected, actual, "Players not created correctly");
     }
+
 
     @SuppressWarnings("unchecked")
     @Test
@@ -351,6 +356,7 @@ public class CardGameTest {
         file.delete();
     }
 
+
     @SuppressWarnings("unchecked")
     @Test
     public void testDistributePack() {
@@ -487,6 +493,7 @@ public class CardGameTest {
         assertEquals(deck2Expected, actual, "Expected deck 2 cards not equal to actual deck 2 cards");
     }
 
+
     @Test
     public void testStartGame() {
         // Create a valid pack for two players
@@ -582,6 +589,7 @@ public class CardGameTest {
         file = new File("deck2_output.txt");
         file.delete();
     }
+
 
     @SuppressWarnings("unchecked")
     @Test
@@ -687,6 +695,7 @@ public class CardGameTest {
         assertEquals(expectedDeck, actualDeck, "Expected deck 1 cards not equal to actual deck 1 cards");
     }
 
+
     @SuppressWarnings("unchecked")
     @Test
     public void testDiscardCard() {
@@ -742,6 +751,7 @@ public class CardGameTest {
 
         assertEquals(3, deck2Card, "Expected discarded card value not equal to actual discarded card value");
     }
+
 
     @Test
     public void testNumberOfPlayers() {

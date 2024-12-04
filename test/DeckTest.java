@@ -7,12 +7,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 public class DeckTest {
-    
     private Deck deck;
     private Card card1;
     private Card card2;
     private Card card3;
     private Card card4;
+
 
     /**
      * Delete output files matching a specific regex pattern.
@@ -28,15 +28,21 @@ public class DeckTest {
         }
     }
 
+
     @BeforeEach
     public void setUp() {
         deleteOutputFiles("deck\\d+_output\\.txt");
-        deck = new Deck(1); // Create empty deck
-        card1 = new Card(2); // Initialize cards
+
+        // Create empty deck
+        deck = new Deck(1);
+
+        // Initialize cards
+        card1 = new Card(2); 
         card2 = new Card(5);
         card3 = new Card(1);
         card4 = new Card(7);
     }
+
 
     @AfterEach
     public void tearDown() {
@@ -51,11 +57,13 @@ public class DeckTest {
 
     @Test
     public void testDrawFromTopDeck() {
+        // Add cards to deck
         deck.addToDeck(card1);
         deck.addToDeck(card2);
         deck.addToDeck(card3);
         deck.addToDeck(card4);
         
+        // For each card added, draw from top of deck and check if it matches the card added
         Card drawnCard = deck.drawFromTopDeck();
         assertEquals(card1, drawnCard, "The drawn card should be the first card added");
         
@@ -71,6 +79,7 @@ public class DeckTest {
         assertTrue(deck.isEmpty(), "Deck should be empty after drawing four cards");
     }
 
+
     @Test
     public void testIsEmpty() {
         assertTrue(deck.isEmpty(), "New deck should be empty");
@@ -78,20 +87,26 @@ public class DeckTest {
         assertFalse(deck.isEmpty(), "Deck should now not be empty after adding a card");
     }
 
+
     @Test
     public void testGetDeckNumber() {
+        // Check if deckNumber is set correctly
         assertEquals(1, deck.getDeckNumber(), "Deck number should be 1");
-        Deck deck2 = new Deck(13); // Create new deck with deckNumber 13
+        // Create new deck with deckNumber 13 and check if it is set correctly
+        Deck deck2 = new Deck(13);
         assertEquals(13, deck2.getDeckNumber(), "Deck number should be 13");
     }
 
     @Test
     public void testLogDeck() {
+        // Add cards to deck
         deck.addToDeck(card1);
         deck.addToDeck(card2);
         deck.addToDeck(card3);
         deck.addToDeck(card4);
         deck.logDeck();
+
+        // Check if log file is created
         File file = new File("deck1_output.txt");
         assertTrue(file.exists(), "Log file should be created");
 
@@ -105,6 +120,6 @@ public class DeckTest {
         }
         assertEquals(expected, actual, "File contents should match expected");       
 
-        file.delete(); // Clean up after test
+        file.delete(); // Clean up file after test
     }
 }

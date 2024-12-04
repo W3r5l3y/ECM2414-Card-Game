@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.lang.reflect.Field;
 
 public class PlayerTest {
-
     private CardGame game;
     private Player player;
+
 
     @BeforeEach
     public void setUp() {
@@ -21,6 +21,7 @@ public class PlayerTest {
         deletePlayerOutputFiles();
     }
 
+
     @AfterEach
     public void tearDown() {
         game = null;
@@ -28,6 +29,10 @@ public class PlayerTest {
         deletePlayerOutputFiles();
     }
 
+
+    /**
+     * Delete output files matching a specific regex pattern.
+     */
     private static void deletePlayerOutputFiles() {
         File currentDir = new File(".");
         File[] files = currentDir.listFiles((dir, name) -> name.matches("player\\d+_output\\.txt"));
@@ -41,8 +46,10 @@ public class PlayerTest {
         }
     }
 
+
     @Test
     public void testRunInitialHandLogging() {
+        // Setup the player's initial hand and run the player thread
         player.addToHand(new Card(1));
         player.addToHand(new Card(2));
         player.addToHand(new Card(3));
@@ -50,7 +57,6 @@ public class PlayerTest {
 
         Thread playerThread = new Thread(player);
         playerThread.start();
-
         try {
             playerThread.join();
         } catch (InterruptedException e) {
@@ -70,11 +76,13 @@ public class PlayerTest {
         }
         assertEquals(expected, actual, "Log file should contain the initial hand");
         
-        //file.delete(); // Clean up after test
+        file.delete(); // Clean up file after test
     }
+
 
     @Test
     public void testRunWinCondition() {
+        // Setup the player's initial hand and run the player thread
         player.addToHand(new Card(1));
         player.addToHand(new Card(1));
         player.addToHand(new Card(1));
@@ -92,8 +100,10 @@ public class PlayerTest {
         assertEquals(1, Player.getWinner(), "Player 1 should be the winner");
     }
 
+
     @Test
     public void testRunGameOverLogging() {
+        // Setup the player's initial hand and run the player thread
         player.addToHand(new Card(1));
         player.addToHand(new Card(1));
         player.addToHand(new Card(1));
@@ -126,15 +136,13 @@ public class PlayerTest {
             e.printStackTrace();
         }
 
-        file.delete(); // Clean up after test
+        file.delete(); // Clean up file after test
     }
+
 
     @Test
     public void testRunLogCurrentHand() {
-        // 1. Get the logCurrentHand method using reflection
-        // 2. Call the method
-        // 3. Check if the log file contains the current hand
-
+        // Use reflection to call the private logCurrentHand method
         try {
             Method logCurrentHandMethod = Player.class.getDeclaredMethod("logCurrentHand", String.class);
             logCurrentHandMethod.setAccessible(true);
@@ -165,14 +173,16 @@ public class PlayerTest {
         file.delete(); // Clean up after test
     }
 
+
     @Test
     public void testGetPlayerNumber() {
         assertEquals(1, player.getPlayerNumber(), "Player number should be 1");
     }
 
+
     @Test
     public void testGetWinner() {
-        // Use reflection to set the winner to -1
+        // Use reflection to set the winner to -1 before running the test (reset the winner)
         try {
             Field winnerField = Player.class.getDeclaredField("winner");
             winnerField.setAccessible(true);
@@ -203,9 +213,11 @@ public class PlayerTest {
         assertEquals(2, Player.getWinner(), "Winner should be 2");
     }
 
+
     @SuppressWarnings("unchecked")
     @Test
     public void testAddToHand() {
+        // Use reflection to add cards to the player's hand
         player.addToHand(new Card(1));
         player.addToHand(new Card(2));
         player.addToHand(new Card(3));
@@ -227,7 +239,7 @@ public class PlayerTest {
             fail("Error reflecting hand field");
         }
 
-        // loop through hand
+        // Loop through hand and add assert the values are correct
         ArrayList<Integer> actual = new ArrayList<>();
         for (Card card : hand) {
             actual.add(card.getValue());
@@ -236,9 +248,11 @@ public class PlayerTest {
         assertEquals(expected, actual, "Hand should contain 4 cards");
     }
 
+
     @SuppressWarnings("unchecked")
     @Test
     public void testRemoveFromHand() {
+        // Use reflection to add cards to the player's hand
         Card card1 = new Card(1);
         Card card2 = new Card(2);
         Card card3 = new Card(3);
@@ -273,7 +287,7 @@ public class PlayerTest {
             fail("Error reflecting hand field");
         }
 
-        // loop through hand
+        // Loop through hand and add assert the values are correct
         ArrayList<Integer> actual = new ArrayList<>();
         for (Card card : hand) {
             actual.add(card.getValue());
@@ -282,15 +296,11 @@ public class PlayerTest {
         assertEquals(expected, actual, "Hand should contain 2 cards");
     }
 
+
     @SuppressWarnings("unchecked")
     @Test
     public void testDrawCard() {
-        // 1. Make a deck and fill it up with 4 cards
-        // 2. Reflect 'decks' field in CardGame and add the deck
-        // 2. Reflect drawCard method
-        // 3. Call drawCard method
-        // 4. Check the card values of the hand
-
+        // Create a deck and add cards to it
         Deck deck = new Deck(1);
         deck.addToDeck(new Card(5));
         deck.addToDeck(new Card(6));
@@ -309,6 +319,7 @@ public class PlayerTest {
             fail("Error reflecting deck field");
         }
 
+        // Reflect drawCard method
         try {
             Method drawCardMethod = player.getClass().getDeclaredMethod("drawCard");
             drawCardMethod.setAccessible(true);
@@ -327,6 +338,7 @@ public class PlayerTest {
         expected.add(7);
         expected.add(8);
 
+        // Reflect hand field and check the values
         ArrayList<Card> hand = null;
         try {
             Field handField = player.getClass().getDeclaredField("hand");
@@ -344,6 +356,7 @@ public class PlayerTest {
 
         assertEquals(expected, actual, "Hand should be drawn from deck");
     }
+
 
     @SuppressWarnings("unchecked")
     @Test
@@ -465,8 +478,10 @@ public class PlayerTest {
         assertEquals(expectedDeck2, actualDeck2, "Deck 2 should have received the 3 on the bottom");
     }
 
+
     @Test
     public void testCheckWin() {
+        // Create a player and add 4 cards of the same value
         Player player3 = new Player(3, game);
 
         player3.addToHand(new Card(3));
@@ -474,6 +489,7 @@ public class PlayerTest {
         player3.addToHand(new Card(3));
         player3.addToHand(new Card(3));
 
+        // Use reflection to call the private checkWin method and check the return value
         boolean actual = false;
         try {
             Method checkWinMethod = player3.getClass().getDeclaredMethod("checkWin");
