@@ -73,7 +73,7 @@ public class CardGameTest {
         game = null;
     }
 
-    // Writes each string to a new line in a .txt file called "pack.txt"
+    // Writes each string to a new line in a .txt file called "filename".txt
     // Overwrites the file each time it's called
     public void packFileCreator(ArrayList<String> input, String filename) {
         try {
