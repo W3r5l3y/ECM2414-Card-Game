@@ -7,19 +7,21 @@ This project is a card game implemented in Java. The game involves multiple play
 ## Project Structure
 
 ```
+
 ECM2414-Card-Game/
 ├── src/
-│   ├── Card.java
-│   ├── CardGame.java
-│   ├── Deck.java
-│   └── Player.java
+│ ├── Card.java
+│ ├── CardGame.java
+│ ├── Deck.java
+│ └── Player.java
 ├── test/
-│   ├── CardGameTest.java
-│   ├── DeckTest.java
-│   ├── CardTest.java
-│   └── PlayerTest.java
+│ ├── CardGameTest.java
+│ ├── DeckTest.java
+│ ├── CardTest.java
+│ └── PlayerTest.java
 ├── README.md
 └── pack.txt
+
 ```
 
 ## Requirements
@@ -39,7 +41,7 @@ ECM2414-Card-Game/
 2. **Compile the source code:**
 
    ```sh
-   javac -d bin src/*.java
+   javac -d bin .\src*.java
    ```
 
 3. **Run the game:**
@@ -53,23 +55,24 @@ ECM2414-Card-Game/
 1. **Compile the test classes:**
 
    ```sh
-   javac -cp TODO
+   javac -cp lib/junit-platform-console-standalone-1.11.3.jar:bin -d bin test/*.java
    ```
 
 2. **Run the tests:**
 
    ```sh
-   java -jar TODO
+   java -jar lib/junit-platform-console-standalone-1.11.3.jar -cp bin --scan-class-path
    ```
 
 ## Test Suite
 
 The test suite includes the following test classes:
 
-- `CardGameTest.java`: Tests for the CardGame class.
+- `CardGameTest.java`: Tests for the `CardGame` class.
+- `DeckTest.java`: Tests for the `Deck` class.
+- `CardTest.java`: Tests for the `Card` class.
+- `PlayerTest.java`: Tests for the `Player` class.
 
-- `DeckTest.java`: Tests for the Deck class.
+```
 
-- `CardTest.java`: Tests for the Card class.
-
-- `PlayerTest.java`: Tests for the Player class.
+```
