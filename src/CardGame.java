@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 /**
  * The CardGame class is a singleton class that represents the card game
- * It contains the main method to start the game, and methods to initialise the players and pack of cards
+ * It contains the main method to start the game, and methods to initialize the players and pack of cards
  * It also contains methods to distribute the pack of cards to the players and decks, and to start the game
- * The CardGame class also contains methods to draw and discard cards from the decks, which are synchronised and used by the Player class
+ * The CardGame class also contains methods to draw and discard cards from the decks, which are synchronized and used by the Player class
  */
 public class CardGame {
 
@@ -71,11 +71,7 @@ public class CardGame {
         File[] files = new File(".").listFiles((dir, name) -> name.matches(filename));
         if (files != null) {
             for (File file : files) {
-                if (file.delete()) {
-                    //System.out.println("Deleted: " + file.getName()); //TODO REMOVE
-                } else {
-                    //System.out.println("Failed to delete: " + file.getName()); //TODO REMOVE
-                }
+                file.delete();
             }
         } else {
             System.out.println("No matching files found.");
@@ -118,7 +114,6 @@ public class CardGame {
      */
     private void createPlayers(int numOfPlayers) {
         for (int i = 1; i <= numOfPlayers; i++) {
-            // System.out.println("Creating Player: " + i); // TODO remove before submission
             Player player = new Player(i, this);
             players.add(player);
         }
@@ -261,8 +256,7 @@ public class CardGame {
             try {
                 wait();
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                //Thread.currentThread().interrupt(); // TODO check if this is needed
+                Thread.currentThread().interrupt();
             }
         }
         Card card = deck.drawFromTopDeck();
