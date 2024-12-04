@@ -34,11 +34,7 @@ public class PlayerTest {
 
         if (files != null) {
             for (File file : files) {
-                if (file.delete()) {
-                    System.out.println("Deleted: " + file.getName()); // TODO: Remove this line after testing
-                } else {
-                    System.out.println("Failed to delete: " + file.getName());
-                }
+                file.delete();
             }
         } else {
             System.out.println("No files found.");
@@ -207,6 +203,7 @@ public class PlayerTest {
         assertEquals(2, Player.getWinner(), "Winner should be 2");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testAddToHand() {
         player.addToHand(new Card(1));
@@ -239,6 +236,7 @@ public class PlayerTest {
         assertEquals(expected, actual, "Hand should contain 4 cards");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testRemoveFromHand() {
         Card card1 = new Card(1);
@@ -284,6 +282,7 @@ public class PlayerTest {
         assertEquals(expected, actual, "Hand should contain 2 cards");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDrawCard() {
         // 1. Make a deck and fill it up with 4 cards
@@ -346,6 +345,7 @@ public class PlayerTest {
         assertEquals(expected, actual, "Hand should be drawn from deck");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDiscardCard() {
         // Create a first player 

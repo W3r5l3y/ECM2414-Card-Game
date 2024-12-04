@@ -21,11 +21,7 @@ public class DeckTest {
         File[] files = new File(".").listFiles((dir, name) -> name.matches(filename));
         if (files != null) {
             for (File file : files) {
-                if (file.delete()) {
-                    //System.out.println("Deleted: " + file.getName()); //TODO REMOVE
-                } else {
-                    //System.out.println("Failed to delete: " + file.getName()); //TODO REMOVE
-                }
+                file.delete();
             }
         } else {
             System.out.println("No matching files found.");
@@ -36,7 +32,7 @@ public class DeckTest {
     public void setUp() {
         deleteOutputFiles("deck\\d+_output\\.txt");
         deck = new Deck(1); // Create empty deck
-        card1 = new Card(2); // Initialise cards
+        card1 = new Card(2); // Initialize cards
         card2 = new Card(5);
         card3 = new Card(1);
         card4 = new Card(7);

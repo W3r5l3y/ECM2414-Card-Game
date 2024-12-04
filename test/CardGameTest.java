@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -87,11 +86,16 @@ public class CardGameTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-}
+    }
 
-
-    // TODO: SINGLETON TESTS GO HERE
-    // WAIT UNTIL ALL OTHER TESTS ARE COMPLETED
+    @Test void testGetInstance() {
+        CardGame game1 = CardGame.getInstance();
+        CardGame game2 = null;
+        assertNotEquals(game1, game2, "Game objects are not the same");
+        game2 = CardGame.getInstance();
+        assertEquals(game1, game2, "Game objects are the same");
+    }
+    
 
     @Test
     public void testDeleteOutputFiles() {
@@ -162,6 +166,7 @@ public class CardGameTest {
         System.setOut(System.out);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCreatePlayers(){
         // Expected players
@@ -204,6 +209,7 @@ public class CardGameTest {
         assertEquals(expected, actual, "Players not created correctly");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetPack() {
         // Tests both getPack and loadPackFromFile methods
@@ -345,6 +351,7 @@ public class CardGameTest {
         file.delete();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDistributePack() {
         // Create a valid pack
@@ -576,6 +583,7 @@ public class CardGameTest {
         file.delete();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDrawCard() {
         // Create a valid pack for two players
@@ -654,8 +662,8 @@ public class CardGameTest {
         try {
             drawCardMethod = game.getClass().getDeclaredMethod("drawCard", int.class);
             drawCardMethod.setAccessible(true);
-            Card drawncard = (Card) drawCardMethod.invoke(game, 1);
-            assertEquals(2, drawncard.getValue(), "Expected drawn card value does not equal actual drawn card value");
+            Card drawnCard = (Card) drawCardMethod.invoke(game, 1);
+            assertEquals(2, drawnCard.getValue(), "Expected drawn card value does not equal actual drawn card value");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -679,6 +687,7 @@ public class CardGameTest {
         assertEquals(expectedDeck, actualDeck, "Expected deck 1 cards not equal to actual deck 1 cards");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDiscardCard() {
         // Reflect createPlayers method to create 1 player in game object
